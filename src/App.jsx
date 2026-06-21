@@ -23,7 +23,7 @@ import ProductByCat from "./pages/productByCAT/ProductByCat.jsx";
 import Checkout from "./pages/CheckOut/CheckOut.jsx";
 import MyOrders from "./pages/MyOrders/MyOrders.jsx";
 import AdminOrders from "./pages/AdminOrder/AdminOrder.jsx";
-import AllProducts from "./pages/allProducts/AllProducts.jsx";
+import AllProducts from "./pages/AllProducts/AllProducts.jsx";
 import About from "./pages/about/About.jsx";
 
 
