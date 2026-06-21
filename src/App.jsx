@@ -23,9 +23,10 @@ import ProductByCat from "./pages/productByCAT/ProductByCat.jsx";
 import Checkout from "./pages/CheckOut/CheckOut.jsx";
 import MyOrders from "./pages/MyOrders/MyOrders.jsx";
 import AdminOrders from "./pages/AdminOrder/AdminOrder.jsx";
-import About from "./pages/about/About.jsx";
-import ScrollToTop from "./pages/ScrollUp/ScrollUp.jsx";
 import AllProducts from "./pages/allProducts/AllProducts.jsx";
+import About from "./pages/about/About.jsx";
+
+
 
 const routers = createBrowserRouter([
   {
