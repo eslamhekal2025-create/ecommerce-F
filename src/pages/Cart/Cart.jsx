@@ -1,87 +1,116 @@
-import React from 'react';
-import axios from 'axios';
-import { useCart } from '../../context/CartContext.jsx';
-import { useNavigate } from 'react-router-dom';
-import './Cart.css';
-import { useTranslation } from "react-i18next";
+// CartPage.jsx - Simplified
+import React, { useState } from "react";
+import { useCart } from "../../context/CartContext";
+import "./Cart.css";
+import { useNavigate } from "react-router-dom";
 
-export default function CartComponent() {
-  const { cart, removeCart, getCart } = useCart();
-      const { i18n,t } = useTranslation();
-
- const lang = i18n.language || "en";
-  const API = import.meta.env.VITE_API_URL;
-  const navigate = useNavigate();
-  const items = Array.isArray(cart) ? cart : [];
-  
-  const updateQuantity = async (productId, newQuantity) => {
-    if (newQuantity < 1) return;
+const CartPage = () => {
+  const { cart, removeFromCart, updateQuantity } = useCart(); // 🔥 استخدم الـ Context function
+  const [updating, setUpdating] = useState({});
+const navigate=useNavigate()
+  const handleQuantityChange = async (productId, newQuantity) => {
+    setUpdating(prev => ({ ...prev, [productId]: true }));
+    
     try {
-      const { data } = await axios.put(`${API}/updateQuntatiy`, {
-        productId,
-        quantity: newQuantity,
-      }, 
-      {
-        headers: { token: localStorage.getItem("token") }
-      }
-    );
-      if (data.success) getCart();
-    }
-    catch (error) {
-      console.error('Error updating quantity:',error);
+      await updateQuantity(productId, newQuantity); // 🔥 Context function
+    } catch (error) {
+      // Error handled in context
+    } finally {
+      setUpdating(prev => ({ ...prev, [productId]: false }));
     }
   };
 
-  const increaseQuantity = (item) => updateQuantity(item._id, (item.quantity || 1) + 1);
-  const decreaseQuantity = (item) => updateQuantity(item._id, (item.quantity || 1) - 1);
-  const removeFromCart = (itemId) => removeCart(itemId);
-
-  const totalPrice = items.reduce(
-    (acc, item) => acc + (item.price || 0) * (item.quantity || 1), 0
-  );
+  const isEmpty = cart.items.length === 0;
 
   return (
     <div className="cart-container">
-      <h2 className="cart-title">🛒 Shopping Cart</h2>
+      {/* Header */}
+      <div className="cart-header">
+        <h1 className="cart-title">
+          <span className="cart-icon">🛒</span>
+          My Cart ({cart.totalItems})
+        </h1>
+      </div>
 
-      {items.length === 0 ? (
-        <p className="empty-cart">Your cart is empty.</p>
+      {isEmpty ? (
+        <div className="empty-cart">
+          <div className="empty-cart-icon">🛍️</div>
+          <h2>Your cart is empty</h2>
+          <p>Add some products to get started!</p>
+        </div>
       ) : (
         <>
           <div className="cart-items">
-            {items.map((item, index) => (
-              <div className="cart-item" key={index}>
-                <div className="cart-item-image-container">
+            {cart.items.map((item) => (
+              <div key={item._id} className="cart-item">
+                <div className="item-image">
                   <img
-                    src={`${API}${item.images[0]}`}
-                    alt={item.name}
-                    className="cart-item-image"
+                    src={
+                      item.product?.images?.[0]
+                        ? `${import.meta.env.VITE_API_URL}/${item.product.images[0].replace(/\\/g, "/")}`
+                        : "/placeholder.png"
+                    }
+                    alt={item.product?.name}
                   />
                 </div>
-                <div className="cart-item-details">
-                  <h3 className="item-name">{item.name[lang]}</h3>
-                  <p className="item-price">Price: ${item.price?.toFixed(2)}</p>
-                  <div className="quantity-controls">
-                    <button onClick={() => decreaseQuantity(item)} disabled={item.quantity <= 1}>-</button>
-                    <span>{item.quantity}</span>
-                    <button onClick={() => increaseQuantity(item)}>+</button>
-                  </div>
-                  <p className="item-total">Total: ${(item.price * item.quantity).toFixed(2)}</p>
-                  <button className="remove-btn" onClick={() => removeFromCart(item._id)}>
-                    Remove ❌
+
+                <div className="item-details">
+                  <h3 className="item-name">{item.product?.name}</h3>
+                  <p className="item-price">
+                    ${item.product?.price?.toFixed(2)} × {item.quantity}
+                  </p>
+                  <p className="item-total">
+                    Total: ${(item.quantity * item.product?.price).toFixed(2)}
+                  </p>
+                </div>
+
+                <div className="quantity-controls">
+                  <button
+                    className={`qty-btn qty-minus ${updating[item.product._id] ? 'loading' : ''}`}
+                    onClick={() => handleQuantityChange(item.product._id, item.quantity - 1)}
+                    disabled={updating[item.product._id] || item.quantity <= 1}
+                  >
+                    {updating[item.product._id] ? '⏳' : '-'}
+                  </button>
+                  
+                  <span className="qty-display">
+                    {updating[item.product._id] ? '...' : item.quantity}
+                  </span>
+                  
+                  <button
+                    className={`qty-btn qty-plus ${updating[item.product._id] ? 'loading' : ''}`}
+                    onClick={() => handleQuantityChange(item.product._id, item.quantity + 1)}
+                    disabled={updating[item.product._id]}
+                  >
+                    {updating[item.product._id] ? '⏳' : '+'}
                   </button>
                 </div>
+
+                <button
+                  className="remove-btn"
+                  onClick={() => removeFromCart(item.product._id)}
+                  disabled={updating[item.product._id]}
+                >
+                  🗑️ Remove
+                </button>
               </div>
             ))}
           </div>
-          <div className="cart-total">
-            <h3>Total: ${totalPrice.toFixed(2)}</h3>
-            <button className="checkout-btn" onClick={() => navigate("/checkout")}>
-              ✅ {t("proccedCheckout")}
-            </button>
+
+          <div className="cart-summary">
+            <div className="summary-row">
+              <span>Total Items:</span> <span>{cart.totalItems}</span>
+            </div>
+            <div className="summary-row total-row">
+              <span>Total Amount:</span> 
+              <span className="total-price">${cart.totalAmount.toFixed(2)}</span>
+            </div>
+            <button onClick={()=>navigate("/Checkout")} className="checkout-btn">Proceed to Checkout 💳</button>
           </div>
         </>
       )}
     </div>
   );
-}
+};
+
+export default CartPage;

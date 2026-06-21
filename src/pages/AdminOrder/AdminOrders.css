@@ -1,0 +1,59 @@
+.admin-orders {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+.admin-orders h2 {
+  margin-bottom: 20px;
+}
+
+/* Card */
+.admin-order-card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+
+/* Top */
+.order-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+/* Items */
+.order-items {
+  margin-bottom: 10px;
+}
+
+.order-items p {
+  font-size: 14px;
+  margin: 3px 0;
+}
+
+/* Bottom */
+.order-bottom {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.order-bottom select {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  .order-top {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .order-bottom {
+    justify-content: flex-start;
+  }
+}

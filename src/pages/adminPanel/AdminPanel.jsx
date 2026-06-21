@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./adminPanel.css";
 import { Link, Outlet } from "react-router-dom";
+import AllProducts from "../allProducts/AllProducts.jsx";
 
 const AdminPanel = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -20,10 +21,13 @@ const AdminPanel = () => {
         <ul>
           <li><Link to={""} onClick={() => setSidebarOpen(false)}> Dashboard </Link></li>
           <li><Link to={"AddItem"} onClick={() => setSidebarOpen(false)}> Add to item</Link></li>
-          <li><Link to={"allProducts"} onClick={() => setSidebarOpen(false)}> All Products</Link></li>
+          <li><Link to={"allProducts"} onClick={() => setSidebarOpen(false)}> allProducts</Link></li>
           <li><Link to={"allOrders"} onClick={() => setSidebarOpen(false)}>AllOrders</Link></li>
           <li><Link to={"AllUser"} onClick={() => setSidebarOpen(false)}>All users</Link></li>
+          
           <li><Link to={"GetContacts"} onClick={() => setSidebarOpen(false)}>GetContacts</Link></li>
+          <li><Link to={"AdminOrders"} onClick={() => setSidebarOpen(false)}>AdminOrders</Link></li>
+
         </ul>
       </aside>
       

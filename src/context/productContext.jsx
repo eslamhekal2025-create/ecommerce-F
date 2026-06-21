@@ -6,62 +6,50 @@ const ProductContext = createContext();
 
 export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
-  const [productCount, setProductCount] = useState(0);
-  const [categories, setCategories] = useState([]);
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [productCategory, setProductCategory] = useState([]);
+   const [page, setPage] = useState(1);
+   const [pages, setPages] = useState(1);
+   const [Loading, setLoading] = useState(false);
+   const [keyword, setKeyword] = useState("");
 
   const API = import.meta.env.VITE_API_URL;
 
-  // جلب كل المنتجات
   const getAllProducts = async () => {
     try {
-      const { data } = await axios.get(`${API}/getAllProducts`, {
-        headers: {
-          token: localStorage.getItem("token"),
-        },
-      });
+      setLoading(true);
 
-      if (data.success) {
-        setProducts(data.data);
-        const uniqueCategories = [...new Set(data.data.map((p) => p.category))];
-        setCategories(uniqueCategories);
-        setProductCount(data.count);
-      }
+      const res = await axios.get(
+        `${API}/products?page=${page}&keyword=${keyword}`
+      );
+
+      setProducts(res.data?.data || []);
+      setPages(res.data?.pages || 1);
     } catch (error) {
-      toast.error("حدث خطأ أثناء جلب المنتجات");
-      console.error("Error fetching products:", error);
+      console.log(error);
+      setProducts([]);
+      setPages(1);
+    } finally {
+      setLoading(false);
     }
   };
-
-  // جلب المنتجات المصنفة حسب الكاتيجوري
-  const getProductCategory = async () => {
-    try {
-      const { data } = await axios.get(`${API}/getCategoryProduct`);
-      if (data.success) {
-        setProductCategory(data.data);
-      }
-    } catch (error) {
-      toast.error("حدث خطأ أثناء جلب التصنيفات");
-      console.error("Error fetching category products:", error);
-    }
-  };
+  
 
   useEffect(() => {
-    getAllProducts();
-    getProductCategory();
-  }, []);
+   getAllProducts();
+  }, [page, keyword]);
 
   return (
     <ProductContext.Provider
       value={{
         getAllProducts,
         products,
-        productCount,
-        categories,
-        activeCategory,
-        setActiveCategory,
-        productCategory,
+        setPage,
+        page,
+        setPages,
+        pages,
+        keyword,
+        setKeyword,
+        setLoading,
+        Loading
       }}
     >
       {children}

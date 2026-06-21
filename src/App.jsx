@@ -6,75 +6,59 @@ import Register from "./pages/Register/Register.jsx";
 import Login from "./pages/Login/Login.jsx";
 import Dashboard from "./pages/Dashboard/MainAdmin.jsx";
 import AddItem from "./pages/AddItem/AddItem.jsx";
-import AllProducts from "./pages/AllProducts/AllProducts.jsx";
-import ProductDet from "./pages/ProductDetails/ProductDet.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
 import { UserProvider } from "./context/userContext.jsx";
 import { ToastContainer } from "react-toastify";
-import CartComponent from "./pages/Cart/Cart.jsx";
-import WishList from "./pages/WislIst/WishList.jsx";
-import AllUser from "./pages/AllUsers/AllUser.jsx";
-import UpdateRole from "./pages/UpdateRole/UpdateRole.jsx";
 import { ProductProvider } from "./context/productContext.jsx";
 import { Provider } from 'react-redux';
 import store from "./Redux/store.js";
 
-import SearchComponent from "./pages/Search/Search.jsx";
-import GetCategories from "./pages/GetCategories/GetCategories.jsx";
-import CheckoutPage from "./pages/CheckOut/CheckOut.jsx";
-import AllOrders from "./pages/AllOrders/AllOrders.jsx";
-import MyOrder from "./pages/MyOrder/MyOrder.jsx";
-import { AdminRoute } from "./pages/AdminRoute/AdminRoute.jsx";
-import { ProtectedRoute } from "./pages/ProtectedRoute/ProtectedRoute.jsx";
-import AddReview from "./pages/AddUserReviews/addReview.jsx";
-import UserDet from "./pages/userDet/userDet.jsx";
-import OrderDet from "./pages/OrderDet/OrderDet.jsx";
-import Contact from "./pages/Contact/Contact.jsx";
-import About from "./pages/About/About.jsx";
-import GetContacts from "./pages/GetContacts/GetContacts.jsx";
 
 import './i18n.js';
+import { AdminRoute } from "./pages/AdminRoute/AdminRoute.jsx";
+import AllProducts from "./pages/allProducts/AllProducts.jsx";
+import ProductDet from "./pages/ProductDet/productDetails.jsx";
+import CartPage from "./pages/Cart/Cart.jsx";
+import ProductByCat from "./pages/productByCAT/ProductByCat.jsx";
+import Checkout from "./pages/CheckOut/CheckOut.jsx";
+import MyOrders from "./pages/MyOrders/MyOrders.jsx";
+import AdminOrders from "./pages/AdminOrder/AdminOrder.jsx";
+import About from "./pages/about/About.jsx";
+import ScrollToTop from "./pages/ScrollUp/ScrollUp.jsx";
 
 const routers = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
-      { index: true, element: <ProtectedRoute><Home /></ProtectedRoute> },
-      { path: "/home", element: <ProtectedRoute><Home /></ProtectedRoute> },
-      { path: "ProductDet/:id", element: <ProductDet /> },
+      { index: true, element: <Home /> },
+      { path: "/home", element: <Home /> },
+      { path: "/About", element: <About /> },
+      { path: "/allProducts", element: <AllProducts /> },
+      { path: "/product/:id", element: <ProductDet /> },
+      { path: "/Cart", element: <CartPage /> },
+      { path: "/getProductByCatS", element: <ProductByCat /> },
+      { path: "/Checkout", element: <Checkout /> },
+      { path: "/MyOrders", element: <MyOrders/> },
+      
 
-      {
-        path: "adminPanel",
-        element: <AdminRoute><AdminPanel /></AdminRoute>,
-        children: [
-          { index: true, element: <Dashboard /> },
-          { path: "dashboard", element: <Dashboard /> },
-          { path: "AddItem", element: <AddItem /> },
-          { path: "allOrders", element: <AdminRoute><AllOrders /></AdminRoute> },
-          { path: "allProducts", element: <AdminRoute><AllProducts /></AdminRoute> },
-          { path: "AllUser", element: <AdminRoute><AllUser /></AdminRoute> },
-          { path: "GetContacts", element: <AdminRoute><GetContacts /></AdminRoute> },
-        ],
-      },
+     {
+  path: "adminPanel",
+  element: <AdminRoute><AdminPanel /></AdminRoute>,
+  children: [
+    { index: true, element: <Dashboard /> },
+    { path: "AddItem", element: <AddItem /> },
+    { path: "allProducts", element: <AllProducts /> },
+    { path: "AdminOrders", element: <AdminOrders /> },
+    
+  ],
+},
 
-      { path: "register", element: <Register /> },
-      { path: "UserDet/:id", element: <UserDet /> },
-      { path: "login", element: <Login /> },
-      { path: "allProducts", element: <AllProducts /> },
-      { path: "AddReview", element: <AddReview /> },
-      { path: "Contact", element: <Contact /> },
-      { path: "About", element: <About /> },
+      { path: "/register", element: <Register /> },
+      { path: "/login", element: <Login /> },
+          { path: "/AddItem", element: <AddItem /> },
 
-      { path: "cart", element: <CartComponent /> },
-      { path: "WishList", element: <WishList /> },
-      { path: "AllUser", element: <AdminRoute><AllUser /></AdminRoute> },
-      { path: "UpdateRole/:id", element: <UpdateRole /> },
-      { path: "search", element: <SearchComponent /> },
-      { path: "GetCategories/:id", element: <GetCategories /> },
-      { path: "Checkout", element: <CheckoutPage /> },
-      { path: "meOrder", element: <MyOrder /> },
-      { path: "OrderDet/:id", element: <OrderDet /> },
+     
     ],
   },
 ]);

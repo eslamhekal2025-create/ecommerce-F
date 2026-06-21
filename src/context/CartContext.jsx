@@ -1,155 +1,134 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useReducer, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const CartContext = createContext();
+const API = import.meta.env.VITE_API_URL;
+
+// 🧠 Reducer
+const cartReducer = (state, action) => {
+  switch (action.type) {
+    case "SET_LOADING":
+      return { ...state, loading: action.payload };
+
+    case "SET_CART":
+      return {
+        ...state,
+        ...action.payload,
+        loading: false,
+      };
+
+    case "CLEAR_CART":
+      return {
+        items: [],
+        totalItems: 0,
+        totalAmount: 0,
+        loading: false,
+      };
+
+    default:
+      return state;
+  }
+};
+
+// 🔐 headers (🔥 FIXED)
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+
+  return {
+    token,
+    "Content-Type": "application/json",
+  };
+};
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
-  const [countCart, setCountCart] = useState(0);
-  const [wishList, setWishList] = useState([]);
-  const [countWishList, setCountWishList] = useState(0);
-  const [users, setUsers] = useState([]);
-  const [countUsers, setCountUsers] = useState(0);
-  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [cart, dispatch] = useReducer(cartReducer, {
+    items: [],
+    totalItems: 0,
+    totalAmount: 0,
+    loading: false,
+  });
 
-  const API = import.meta.env.VITE_API_URL;
-
-  // ================== Cart ==================
-  const addToCart = async (productId, quantity = 1) => {
+  // 🛒 load cart
+  const loadCart = async () => {
     try {
-      const { data } = await axios.post(
-        `${API}/AddToCart`,
-        { productId, quantity },
-        {
-          headers: {
-            token: localStorage.getItem("token"),
-          },
-        }
-      );
-      if (data.success) {
-        toast.success("this product added to cart")
-        getCart()
-      };
-    } catch (err) {
-      console.error("Error adding to cart:", err.response?.data?.message || err.message);
-      toast.error("فشل في إضافة المنتج للسلة");
-    }
-  };
+      dispatch({ type: "SET_LOADING", payload: true });
 
-  const removeCart = async (productId) => {
-    try {
-      const { data } = await axios.delete(`${API}/deleteProductCart/${productId}`, {
-        headers: { token: localStorage.getItem("token") },
+      const { data } = await axios.get(`${API}/cart`, {
+        headers: getAuthHeaders(),
       });
-      if (data.success) getCart();
-    } catch (err) {
-      console.error("Error removing from cart:", err.response?.data?.message || err.message);
-      toast.error("فشل في حذف المنتج من السلة");
-    }
-  };
 
-  const getCart = async () => {
-    try {
-      const { data } = await axios.get(`${API}/getCart`, {
-        headers: { token: localStorage.getItem("token") },
-      });
-      if (data.success) {
-        setCart(data.data || []);
-        setCountCart(data.count);
-      }
-    } catch (err) {
-      console.error("Error fetching cart:", err.response?.data?.message || err.message);
-    }
-  };
+      dispatch({ type: "SET_CART", payload: data.data });
 
-  // ================== WishList ==================
-  const addToWishList = async (productId) => {
-    try {
-      const { data } = await axios.post(
-        `${API}/addToWishlist`,
-        { productId },
-        {
-          headers: {
-            token: localStorage.getItem("token"),
-          },
-        }
-      );
-      if (data.success) getWishList();
-    } catch (err) {
-      console.error("Error adding to wishlist:", err.response?.data?.message || err.message);
-      toast.error("فشل في إضافة المنتج إلى المفضلة");
-    }
-  };
-
-  const removeWishList = async (productId) => {
-    try {
-      const { data } = await axios.delete(`${API}/removeWishList/${productId}`, {
-        headers: { token: localStorage.getItem("token") },
-      });
-      if (data.success) getWishList();
     } catch (error) {
-      console.error("Error removing product from wishlist:", error);
+      console.error(error);
     }
   };
 
-  const getWishList = async () => {
-    try {
-      const { data } = await axios.get(`${API}/WishList`, {
-        headers: { token: localStorage.getItem("token") },
-      });
-      if (data.success) {
-        setWishList(data.data || []);
-        setCountWishList(data.count);
-      }
-    } catch (err) {
-      console.error("Error fetching wishlist:", err.response?.data?.message || err.message);
-    }
-  };
 
-  // ================== Users ==================
-  const getAllUsers = async () => {
-    try {
-      setLoadingUsers(true);
-      const { data } = await axios.get(`${API}/getUsers`);
-      if (data.success) {
-        setUsers(data.data);
-        setCountUsers(data.count);
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
-      setLoadingUsers(false);
-    }
-  };
 
-  // ================== useEffect ==================
+  // 🔁 update quantity
+const updateQuantity = async (productId, quantity) => {
+  try {
+    const { data } = await axios.put(
+      `${API}/cart`,
+      { productId, quantity },
+      { headers: getAuthHeaders() }
+    );
+
+    if (data.success) {
+      dispatch({ type: "SET_CART", payload: data.data });
+    }
+
+  } catch (error) {
+    console.error(error);
+    toast.error("Update failed");
+  }
+}; 
   useEffect(() => {
-    getCart();
-    getWishList();
-    getAllUsers();
+    loadCart();
   }, []);
+
+  // ➕ add
+  const addToCart = async (productId) => {
+    try {
+      const { data } = await axios.post(
+        `${API}/cart`,
+        { productId },
+        { headers: getAuthHeaders() }
+      );
+
+      if (data.success) {
+        toast.success("Added to cart");
+        dispatch({ type: "SET_CART", payload: data.data });
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // ❌ remove
+  const removeFromCart = async (productId) => {
+    const { data } = await axios.delete(`${API}/cart/${productId}`, {
+      headers: getAuthHeaders(),
+    });
+
+    dispatch({ type: "SET_CART", payload: data.data });
+  };
+
+  // 🗑 clear
+  const clearCart = async () => {
+    await axios.delete(`${API}/cart/clear`, {
+      headers: getAuthHeaders(),
+    });
+
+    dispatch({ type: "CLEAR_CART" });
+  };
 
   return (
     <CartContext.Provider
-      value={{
-        cart,
-        countCart,
-        addToCart,
-        removeCart,
-        getCart,
-
-        wishList,
-        countWishList,
-        addToWishList,
-        removeWishList,
-        getWishList,
-
-        users,
-        countUsers,
-        loadingUsers,
-        getAllUsers,
-      }}
+      value={{ cart, addToCart, removeFromCart, clearCart,updateQuantity }}
     >
       {children}
     </CartContext.Provider>

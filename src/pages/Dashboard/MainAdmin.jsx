@@ -15,20 +15,20 @@ export default function Dashboard() {
     </header>
     <section className="cards">
    
-    <Link to={"allOrders"}>
+    <Link className='text-none' to={"allOrders"}>
     <div className="card">
     <h3>Orders</h3>
     <p>120</p>
   </div>
     </Link>
 
-  <Link to={"AllUser"}> 
+  <Link className='text-none' to={"AllUser"}> 
     <div className="card">
   <h3>Users</h3>
   <p>{countUsers}</p>
 </div>
 </Link>
-      <Link to={"allProducts"}>
+      <Link className='text-none' to={"allProducts"}>
 
       <div className="card">
         <h3>Products</h3>

@@ -1,0 +1,103 @@
+.cat-container {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.cat-container h2 {
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+/* 🔥 GRID ذكي */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 220px));
+  justify-content: center;
+  gap: 20px;
+}
+
+/* CARD */
+.cat-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.cat-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* IMAGE BOX */
+.cat-image {
+  background: #f7f7f7;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+/* IMAGE */
+.cat-image img {
+  width: 100%;
+  height: 100px;
+  object-fit: contain;
+  transition: 0.3s;
+}
+
+.cat-card:hover img {
+  transform: scale(1.1);
+}
+
+/* TITLE */
+.cat-card h3 {
+  font-size: 16px;
+  margin-bottom: 5px;
+  text-transform: capitalize;
+}
+
+/* COUNT */
+.cat-card span {
+  font-size: 13px;
+  color: #777;
+}
+
+/* 🔥 Badge صغيرة */
+.cat-card::after {
+  content: "Shop";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #f1c40f;
+  color: #000;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+/* 📱 Mobile */
+@media (max-width: 600px) {
+  .cat-container {
+    padding: 20px 10px;
+  }
+
+  .cat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .cat-card {
+    padding: 15px;
+  }
+
+  .cat-image img {
+    height: 80px;
+  }
+
+  .cat-container h2 {
+    font-size: 18px;
+  }
+}

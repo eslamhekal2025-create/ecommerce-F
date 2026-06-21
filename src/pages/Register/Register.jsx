@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import './register.css';
+import "./register.css";
 import { useUser as useUserContext } from "../../context/userContext.jsx";
 
 const Register = () => {
@@ -11,125 +11,131 @@ const Register = () => {
     email: "",
     password: "",
     phone: "",
-    image: null,  // إضافة خاصية للصورة
+    image: null,
   });
+
   const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-            const API = import.meta.env.VITE_API_URL;
-
+  const API = import.meta.env.VITE_API_URL;
   const { setRefresh } = useUserContext();
   const navigate = useNavigate();
 
-  // Handle Input Change
+  // Handle Inputs
   const handleChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    setUser((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
-  // Handle Image Change
+  // Handle Image
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setUser({ ...user, image: file });
-    if (file) {
-      setPreview(URL.createObjectURL(file)); // توليد رابط للصورة
+    if (file && !file.type.startsWith("image/")) {
+      return toast.error("Please upload a valid image");
     }
-  }; 
 
+    setUser((prev) => ({ ...prev, image: file }));
+    setPreview(URL.createObjectURL(file));
+  };
 
   const handleRemoveImage = () => {
-    setUser({ ...user, image: null });
+    setUser((prev) => ({ ...prev, image: null }));
     setPreview(null);
   };
-  // Handle Form Submit
+
+  // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append("name", user.name);
-      formData.append("email", user.email);
-      formData.append("password", user.password);
-      formData.append("phone", user.phone);
-      if (user.image) {
-        formData.append("image", user.image);  // إضافة الصورة للـ FormData
-      }
 
-      const res = await axios.post(`${API}/register`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",  // تحديد نوع المحتوى
-        },
+    if (!user.name || !user.email || !user.password || !user.phone) {
+      return toast.error("All fields are required");
+    }
+
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+      Object.keys(user).forEach((key) => {
+        if (user[key]) formData.append(key, user[key]);
       });
 
+      const res = await axios.post(`${API}/register`, formData);
+
       if (res.data?.success) {
-        navigate("/login");
-        setRefresh((prev) => !prev);
+        toast.success("Registered successfully 🎉");
         localStorage.setItem("phone", user.phone);
+        setRefresh((prev) => !prev);
+        navigate("/login");
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong");
+      toast.error(error.response?.data?.message || "Error occurred");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="register-container">
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
+      <form className="register-card" onSubmit={handleSubmit}>
+        <h2>Create Account</h2>
+
         <input
           type="text"
           name="name"
           placeholder="Full Name"
           value={user.name}
           onChange={handleChange}
-          required
         />
+
         <input
           type="email"
           name="email"
-          placeholder="Email"
+          placeholder="Email Address"
           value={user.email}
           onChange={handleChange}
-          required
         />
+
         <input
           type="password"
           name="password"
           placeholder="Password"
           value={user.password}
           onChange={handleChange}
-          required
         />
+
         <input
           type="number"
           name="phone"
-          placeholder="Phone"
+          placeholder="Phone Number"
           value={user.phone}
           onChange={handleChange}
-          required
         />
-        <input
-          type="file"
-          name="image"
-          accept="image/*"
-          onChange={handleImageChange}
-        />
+
+        <label className="upload-box">
+          Upload Image
+          <input type="file" accept="image/*" onChange={handleImageChange} hidden />
+        </label>
+
         {preview && (
-          <div style={{ marginBottom: "10px",position:"relative" }}>
-        
-          <button
-      type="button"
-      onClick={handleRemoveImage}
-      className="btnRemoveImg"
-    >
-      ×
-    </button>
-            <img
-              src={preview}
-              alt="Preview"
-              className="ImgPrevReg"
-            />
+          <div className="preview-box">
+            <button type="button" onClick={handleRemoveImage}>
+              ×
+            </button>
+            <img src={preview} alt="preview" />
           </div>
         )}
-        <button className="sub-Auth" type="submit">Register</button>
+
+        <button className="submit-btn" disabled={loading}>
+          {loading ? "Loading..." : "Register"}
+        </button>
+
+        <p>
+          Already have an account?
+          <Link to="/login"> Login</Link>
+        </p>
       </form>
-      <p className="PAuth">If you have an account please <Link className="GoAuth" to={"/login"}>click here</Link></p>
     </div>
   );
 };

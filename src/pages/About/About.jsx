@@ -1,39 +1,71 @@
-import React from 'react';
-import './About.css';
+import "./about.css";
 
-const About = () => {
+export default function About() {
   return (
-    <div className="about-container">
-      <h2>About Us</h2>
-      <p className="about-intro">
-        Welcome to <strong>Rambo</strong> – your ultimate destination for top-quality products, unbeatable deals, and a smooth shopping experience.
-      </p>
-
-      <div className="about-section">
-        <h3>Who We Are</h3>
+    <section className="about">
+      <div className="about-header">
+        <h1>About Our Store</h1>
         <p>
-          Rambo is an e-commerce platform created with the mission of bringing you the best shopping experience from the comfort of your home. We offer a wide variety of products and are committed to customer satisfaction.
+          We provide high-quality products with competitive prices and fast
+          delivery to ensure the best shopping experience for our customers.
         </p>
       </div>
 
-      <div className="about-section">
-        <h3>Our Vision</h3>
+      <div className="about-cards">
+        <div className="card">
+          <h3>🚚 Fast Delivery</h3>
+          <p>
+            Quick and reliable shipping to get your orders delivered on time.
+          </p>
+        </div>
+
+        <div className="card">
+          <h3>⭐ Premium Quality</h3>
+          <p>
+            Carefully selected products that meet the highest quality standards.
+          </p>
+        </div>
+
+        <div className="card">
+          <h3>🔒 Secure Payments</h3>
+          <p>
+            Safe and secure payment methods to protect your transactions.
+          </p>
+        </div>
+
+        <div className="card">
+          <h3>💬 Customer Support</h3>
+          <p>
+            Dedicated support team ready to assist you whenever you need help.
+          </p>
+        </div>
+      </div>
+
+      <div className="about-story">
+        <h2>Our Story</h2>
         <p>
-          To become the leading online store in the region, known for quality, reliability, and outstanding service.
+          Founded with a passion for providing exceptional products and
+          customer service, our mission is to make online shopping simple,
+          affordable, and enjoyable for everyone.
         </p>
       </div>
 
-      <div className="about-section">
-        <h3>Why Choose Us?</h3>
-        <ul>
-          <li>Fast and reliable delivery</li>
-          <li>Affordable prices</li>
-          <li>Secure payment methods</li>
-          <li>Excellent customer support</li>
-        </ul>
+      <div className="about-stats">
+        <div className="stat">
+          <h2>10K+</h2>
+          <span>Happy Customers</span>
+        </div>
+
+        <div className="stat">
+          <h2>500+</h2>
+          <span>Products</span>
+        </div>
+
+        <div className="stat">
+          <h2>99%</h2>
+          <span>Positive Reviews</span>
+        </div>
       </div>
-    </div>
+    </section>
   );
-};
-
-export default About;
+}

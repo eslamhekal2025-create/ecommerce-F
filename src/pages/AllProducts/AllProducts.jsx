@@ -1,108 +1,64 @@
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
 import "./allProducts.css";
-import { Link } from "react-router-dom";
-import { useCart } from "../../context/CartContext.jsx";
+import ProductCard from "./productCard.jsx";
 import { useProduct } from "../../context/productContext.jsx";
-import Swal from 'sweetalert2';
-import { useTranslation } from "react-i18next";
 
-export default function AllProducts() {
-          const API = import.meta.env.VITE_API_URL;
-
-    const { i18n,t } = useTranslation();
-  const lang = i18n.language || "en";
-
-  const { addToCart,addToWihsList } = useCart();
-
-const {products,categories,activeCategory,setActiveCategory,getAllProducts}=useProduct()
+const AllProducts = () => {
+  const {products,setProducts,keyword,setKeyword,setPage,page,loading,pages}=useProduct()
 
 
-  const deleteProduct = async (id) => {
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel',
-    });
-  
-    if (result.isConfirmed) {
-      try {
-
-        const response = await axios.delete(`${API}/removeProduct/${id}`);
-        if (response.data.success) {
-          toast.success("User deleted successfully");
-          getAllProducts();
-          Swal.fire('Deleted!', 'User has been deleted.', 'success');
-        } else {
-          toast.error(response.data.message || "Error deleting user");
-        }
-      } catch (error) {
-        toast.error(error.response?.data?.message || "Something went wrong");
-      }
-    }
-  };
-
-
-
-
-
-
-
-
-
-
-  const filteredProducts = activeCategory === "all" ? products : products.filter((p) => p.category === activeCategory);
+  const handleDelete = (id) => {
+  setProducts((prev) => prev.filter((p) => p._id !== id));
+};
 
   return (
-    <div className="all-products-page">
-      
-    <div className="category-tabs">
-        <button className={`category-tab ${activeCategory === "all" ? "active" : ""}`} onClick={() => setActiveCategory("all")}>
-          All
-        </button>
-        {categories.map((cat, index) => (
-          <button key={index} className={`category-tab ${activeCategory === cat ? "active" : ""}`} onClick={() => setActiveCategory(cat)}>
-            {cat}
-          </button>
-        ))}
-      </div>
+    <div className="all-products-container">
+      <h2>All Products</h2>
 
-      <div className="products-container">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product, i) => (
-            <div key={i} className="product-card">
-            <Link id="Link" to={"/ProductDet/"+product._id}>   
+      {/* 🔍 Search */}
+      <input
+        type="text"
+        placeholder="Search products..."
+        className="search-input"
+        value={keyword}
+        onChange={(e) => {
+          setKeyword(e.target.value);
+          setPage(1);
+        }}
+      />
 
-              {product.images && product.images.length > 0 ? (
-                <img src={`${API}${product.images[0]}`} alt={product.name[lang]} className="product-image" />
-              )
-              :
-              (
-                <p className="no-image"> No image available.</p>
-              )}
+      {loading ? (
+        <p className="loading">Loading...</p>
+      ) : (
+        <>
+          {/* Products */}
+          <div className="products-grid">
+            {products?.length > 0 ? (
+              products.map((p) => (
+                <ProductCard key={p._id} p={p} onDelete={handleDelete}/>
+              ))
+            ) : (
+              <p>No products found</p>
+            )}
+          </div>
 
-              <div className="product-info">
-                <h2 className="product-name">{product.name[lang]}</h2>
-                <p className="product-price">{product.price} USD</p>
-                <p className="product-desc">{product.description[lang]} </p>
-                
-              </div>
-              </Link>
-
-              <button className="delete-button btnProduct" onClick={() => deleteProduct(product._id)}>{t("deleteProduct")}</button>
-              <button className="add-to-cart-btn   btnProduct" onClick={() => addToCart(product._id)}>{t("addToCart")}</button>
-              <button className="btn-wishlist  btnProduct" onClick={() => addToWihsList(product._id)}>{t("addToWishlist")}</button>
-            </div>
-          ))
-        ) : (
-          <p className="no-products">{t("NoProductFound")}</p>
-        )}
-      </div>
+          {/* Pagination */}
+          <div className="pagination">
+            {[...Array(pages).keys()].map((x) => (
+              <button
+                key={x + 1}
+                className={page === x + 1 ? "active" : ""}
+                onClick={() => setPage(x + 1)}
+              >
+                {x + 1}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
-}
+};
+
+export default AllProducts;

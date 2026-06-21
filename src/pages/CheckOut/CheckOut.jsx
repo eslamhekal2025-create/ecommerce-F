@@ -1,92 +1,136 @@
-import React, { useRef, useState } from 'react';
-import { useCart } from '../../context/CartContext.jsx';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import './checkOut.css';
-import { useTranslation } from "react-i18next";
+import React, { useState } from "react";
+import axios from "axios";
+import { useCart } from "../../context/CartContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "./Checkout.css";
 
-export default function CheckoutPage() {
-  const { cart, getCart } = useCart();
+const Checkout = () => {
+  const { cart, clearCart } = useCart(); // 🔥 خد الكارت
   const navigate = useNavigate();
-  const invoiceRef = useRef();
-      const { i18n } = useTranslation();
-  const lang = i18n.language || "en";
+  const API = import.meta.env.VITE_API_URL;
 
-            const API = import.meta.env.VITE_API_URL;
+  const [form, setForm] = useState({
+    address: "",
+    city: "",
+    phone: "",
+    paymentMethod: "cash",
+  });
 
-  const[redirectedToReview, setRedirectedToReview] = useState(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const items = Array.isArray(cart) ? cart : [];
-  const totalPrice = items.reduce(
-    (acc, item) => acc + (item.price || 0) * (item.quantity || 1),
-    0
-  );
+    if (cart.items.length === 0) {
+      return toast.error("Cart is empty");
+    }
 
-  const handleConfirmOrder = async (id) => {
     try {
       const { data } = await axios.post(
-        `${API}/checkOut`,
-        {}, 
-        { headers: { token: localStorage.getItem("token") } }
+        `${API}/CheckOut`,
+        form,
+        {
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        }
       );
 
       if (data.success) {
-        toast.success(
-          <div>
-            Order placed successfully ✅
-            <br />
-            <button
-              onClick={() => {
-                setRedirectedToReview(true);  
-                navigate('/AddReview');
-                toast.dismiss();
-              }}
-              className='RateRestaurant'
-            >
-              ⭐ Rate the Restaurant
-            </button>
-          </div>,
-          { autoClose: false }
-        );
-        getCart();
-        navigate(`/`);
-      } else {
-        toast.error(data.message || "Checkout failed");
+        toast.success("Order placed ✅");
+        clearCart();
+        navigate("/");
       }
+
     } catch (error) {
-      toast.error("Something went wrong");
-      console.error(error);
+      toast.error("Order failed ❌");
     }
   };
 
   return (
     <div className="checkout-container">
-      <div ref={invoiceRef} id="invoice-section">
-        <h2>Checkout Page 🧾</h2>
+      <h2>Checkout</h2>
 
-        {items.length === 0 ? (
-          <p>Your cart is empty.</p>
-        ) : (
-          <>
-            <div className="checkout-items">
-              {items.map((item, index) => (
-                <div key={index} className="checkout-item">
-                  <p><strong>{item.name[lang]}</strong> × {item.quantity} — ${item.price}</p>
-                </div>
-              ))}
+      <div className="checkout-grid">
+        
+        {/* 🧾 LEFT: FORM */}
+        <form onSubmit={handleSubmit} className="checkout-form">
+          <h3>Shipping Info</h3>
+
+          <input
+            type="text"
+            placeholder="Address"
+            value={form.address}
+            onChange={(e) =>
+              setForm({ ...form, address: e.target.value })
+            }
+            required
+          />
+
+          <input
+            type="text"
+            placeholder="City"
+            value={form.city}
+            onChange={(e) =>
+              setForm({ ...form, city: e.target.value })
+            }
+            required
+          />
+
+          <input
+            type="text"
+            placeholder="Phone"
+            value={form.phone}
+            onChange={(e) =>
+              setForm({ ...form, phone: e.target.value })
+            }
+            required
+          />
+
+          <select
+            value={form.paymentMethod}
+            onChange={(e) =>
+              setForm({ ...form, paymentMethod: e.target.value })
+            }
+          >
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+          </select>
+
+          <button type="submit" className="place-order-btn">
+            Place Order 💳
+          </button>
+        </form>
+
+        {/* 🛒 RIGHT: ORDER SUMMARY */}
+        <div className="order-summary">
+          <h3>Order Summary</h3>
+
+          {cart.items.map((item) => (
+            <div key={item._id} className="summary-item">
+              <img
+                src={`${API}/${item.product.images[0].replace(/\\/g, "/")}`}
+                alt={item.product.name}
+              />
+              <div>
+                <p>{item.product.name}</p>
+                <span>
+                  {item.quantity} × ${item.product.price}
+                </span>
+              </div>
+              <strong>
+                ${(item.quantity * item.product.price).toFixed(2)}
+              </strong>
             </div>
+          ))}
 
-            <h3>Total: ${totalPrice.toFixed(2)}</h3>
-          </>
-        )}
+          <div className="summary-total">
+            <span>Total:</span>
+            <span className="totalOrder">${cart.totalAmount.toFixed(2)}</span>
+          </div>
+        </div>
       </div>
-
-      {items.length > 0 && (
-        <button className="confirm-order-btn" onClick={() => handleConfirmOrder(items[0]._id)}>
-          ✅ Confirm Order
-        </button>
-      )}
     </div>
   );
-}
+};
+
+export default Checkout;
