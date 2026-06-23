@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./adminPanel.css";
 import { Link, Outlet } from "react-router-dom";
-import AllProducts from "../allProducts/AllProducts.jsx";
+import AllProducts from "../AllProducts/AllProducts.jsx";
 
 const AdminPanel = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
