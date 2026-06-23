@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./pages/Layout/layout.jsx";
 
 import Home from "./pages/home/Home.jsx";
-import AdminPanel from "./pages/AdminPanel/AdminPanel.jsx";
+import AdminPanel from "./pages/adminPanel/AdminPanel.jsx";
 import Register from "./pages/Register/Register.jsx";
 import Login from "./pages/Login/Login.jsx";
 import Dashboard from "./pages/Dashboard/MainAdmin.jsx";
