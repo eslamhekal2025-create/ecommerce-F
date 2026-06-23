@@ -1,7 +1,8 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./pages/Layout/layout.jsx";
+
 import Home from "./pages/home/Home.jsx";
-import AdminPanel from "./pages/adminPanel/AdminPanel.jsx";
+import AdminPanel from "./pages/AdminPanel/AdminPanel.jsx";
 import Register from "./pages/Register/Register.jsx";
 import Login from "./pages/Login/Login.jsx";
 import Dashboard from "./pages/Dashboard/MainAdmin.jsx";
@@ -23,7 +24,7 @@ import ProductByCat from "./pages/productByCAT/ProductByCat.jsx";
 import Checkout from "./pages/CheckOut/CheckOut.jsx";
 import MyOrders from "./pages/MyOrders/MyOrders.jsx";
 import AdminOrders from "./pages/AdminOrder/AdminOrder.jsx";
-import AllProducts from "./pages/allProducts/AllProducts.jsx";
+import AllProducts from "./pages/AllProducts/AllProducts.jsx";
 import About from "./pages/about/About.jsx";
 
 
