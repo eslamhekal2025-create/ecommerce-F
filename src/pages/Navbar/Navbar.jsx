@@ -51,6 +51,13 @@ export default function Navbar() {
               Cart
             </Link>
           </li>
+ <li>
+            <Link to="/adminPanel" className="cart">
+             Admin-Panel
+            </Link>
+          </li>
+
+
 
           {token ? (
             <>

@@ -25,6 +25,7 @@ import Checkout from "./pages/CheckOut/CheckOut.jsx";
 import MyOrders from "./pages/MyOrders/MyOrders.jsx";
 import AdminOrders from "./pages/AdminOrder/AdminOrder.jsx";
 import AllProducts from "./pages/AllProducts/AllProducts.jsx";
+import About from "./pages/About/About.jsx";
 
 
 
@@ -35,6 +36,7 @@ const routers = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "/home", element: <Home /> },
+      { path: "/About", element: <About /> },
       { path: "/allProducts", element: <AllProducts /> },
       { path: "/product/:id", element: <ProductDet /> },
       { path: "/Cart", element: <CartPage /> },
