@@ -37,7 +37,7 @@ const {addToCart}=useCart()
 
   const images =
     product.images?.map(
-      (img) => `http://localhost:5000/${img.replace(/\\/g, "/")}`
+      (img) => `${API}/${img.replace(/\\/g, "/")}`
     ) || [];
 
   return (
